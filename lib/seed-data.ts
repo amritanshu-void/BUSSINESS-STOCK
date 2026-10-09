@@ -1,0 +1,436 @@
+import { Product, Transaction, TransactionType, Warehouse } from './types'
+import { stockLiteStore } from './store'
+
+export const warehouses: Warehouse[] = [
+  {
+    id: 'wh-north',
+    name: 'North Distribution Center',
+    location: 'Elkridge, MD',
+  },
+  { id: 'wh-south', name: 'South Fulfillment Hub', location: 'Waco, TX' },
+]
+
+const initialProducts: Product[] = [
+  {
+    id: 'p-001',
+    name: 'Corrugated Shipping Box (M)',
+    category: 'Packaging',
+    warehouseId: 'wh-north',
+    currentStock: 420,
+    reorderThreshold: 100,
+  },
+  {
+    id: 'p-002',
+    name: 'Corrugated Shipping Box (M)',
+    category: 'Packaging',
+    warehouseId: 'wh-south',
+    currentStock: 38,
+    reorderThreshold: 100,
+  },
+  {
+    id: 'p-003',
+    name: 'Stretch Wrap Film 18in',
+    category: 'Packaging',
+    warehouseId: 'wh-north',
+    currentStock: 64,
+    reorderThreshold: 60,
+  },
+  {
+    id: 'p-004',
+    name: 'Stretch Wrap Film 18in',
+    category: 'Packaging',
+    warehouseId: 'wh-south',
+    currentStock: 15,
+    reorderThreshold: 60,
+  },
+  {
+    id: 'p-005',
+    name: 'Packing Tape, Clear 48mm',
+    category: 'Packaging',
+    warehouseId: 'wh-north',
+    currentStock: 210,
+    reorderThreshold: 80,
+  },
+  {
+    id: 'p-006',
+    name: 'Heavy-Duty Pallet Jack',
+    category: 'Equipment',
+    warehouseId: 'wh-south',
+    currentStock: 6,
+    reorderThreshold: 5,
+  },
+  {
+    id: 'p-007',
+    name: 'Heavy-Duty Pallet Jack',
+    category: 'Equipment',
+    warehouseId: 'wh-north',
+    currentStock: 3,
+    reorderThreshold: 5,
+  },
+  {
+    id: 'p-008',
+    name: 'Steel Shelving Unit 5-Tier',
+    category: 'Equipment',
+    warehouseId: 'wh-north',
+    currentStock: 12,
+    reorderThreshold: 4,
+  },
+  {
+    id: 'p-009',
+    name: 'Forklift Safety Vest',
+    category: 'Safety',
+    warehouseId: 'wh-south',
+    currentStock: 25,
+    reorderThreshold: 20,
+  },
+  {
+    id: 'p-010',
+    name: 'Forklift Safety Vest',
+    category: 'Safety',
+    warehouseId: 'wh-north',
+    currentStock: 20,
+    reorderThreshold: 20,
+  },
+  {
+    id: 'p-011',
+    name: 'Nitrile Gloves (Box of 100)',
+    category: 'Safety',
+    warehouseId: 'wh-north',
+    currentStock: 140,
+    reorderThreshold: 50,
+  },
+  {
+    id: 'p-012',
+    name: 'Nitrile Gloves (Box of 100)',
+    category: 'Safety',
+    warehouseId: 'wh-south',
+    currentStock: 9,
+    reorderThreshold: 50,
+  },
+  {
+    id: 'p-013',
+    name: 'First Aid Kit, Wall-Mount',
+    category: 'Safety',
+    warehouseId: 'wh-south',
+    currentStock: 8,
+    reorderThreshold: 8,
+  },
+  {
+    id: 'p-014',
+    name: 'Handheld Barcode Scanner',
+    category: 'Electronics',
+    warehouseId: 'wh-north',
+    currentStock: 18,
+    reorderThreshold: 6,
+  },
+  {
+    id: 'p-015',
+    name: 'Handheld Barcode Scanner',
+    category: 'Electronics',
+    warehouseId: 'wh-south',
+    currentStock: 4,
+    reorderThreshold: 6,
+  },
+  {
+    id: 'p-016',
+    name: 'Label Printer, Thermal',
+    category: 'Electronics',
+    warehouseId: 'wh-north',
+    currentStock: 9,
+    reorderThreshold: 3,
+  },
+  {
+    id: 'p-017',
+    name: 'Warehouse Radio, Two-Way',
+    category: 'Electronics',
+    warehouseId: 'wh-south',
+    currentStock: 11,
+    reorderThreshold: 10,
+  },
+  {
+    id: 'p-018',
+    name: 'Wooden Pallet, Standard',
+    category: 'Materials',
+    warehouseId: 'wh-north',
+    currentStock: 320,
+    reorderThreshold: 150,
+  },
+  {
+    id: 'p-019',
+    name: 'Wooden Pallet, Standard',
+    category: 'Materials',
+    warehouseId: 'wh-south',
+    currentStock: 132,
+    reorderThreshold: 150,
+  },
+  {
+    id: 'p-020',
+    name: 'Cardboard Dunnage Sheets',
+    category: 'Materials',
+    warehouseId: 'wh-south',
+    currentStock: 55,
+    reorderThreshold: 55,
+  },
+]
+
+// A few sample transactions so the History page isn't empty on first load.
+const initialTransactions: Transaction[] = [
+  {
+    id: 't-001',
+    productId: 'p-002',
+    productName: 'Corrugated Shipping Box (M)',
+    warehouseId: 'wh-south',
+    warehouseName: 'South Fulfillment Hub',
+    type: 'OUT',
+    quantity: 62,
+    timestamp: '2026-09-15T14:32:00Z',
+  },
+  {
+    id: 't-002',
+    productId: 'p-018',
+    productName: 'Wooden Pallet, Standard',
+    warehouseId: 'wh-north',
+    warehouseName: 'North Distribution Center',
+    type: 'IN',
+    quantity: 100,
+    timestamp: '2026-09-16T09:05:00Z',
+  },
+  {
+    id: 't-003',
+    productId: 'p-011',
+    productName: 'Nitrile Gloves (Box of 100)',
+    warehouseId: 'wh-north',
+    warehouseName: 'North Distribution Center',
+    type: 'TRANSFER_OUT',
+    quantity: 40,
+    timestamp: '2026-09-17T11:20:00Z',
+    linkedTransactionId: 't-004',
+  },
+  {
+    id: 't-004',
+    productId: 'p-012',
+    productName: 'Nitrile Gloves (Box of 100)',
+    warehouseId: 'wh-south',
+    warehouseName: 'South Fulfillment Hub',
+    type: 'TRANSFER_IN',
+    quantity: 40,
+    timestamp: '2026-09-17T11:20:00Z',
+    linkedTransactionId: 't-003',
+  },
+]
+if (stockLiteStore.products.length === 0) {
+  stockLiteStore.products.push(...initialProducts)
+}
+
+if (stockLiteStore.transactions.length === 0) {
+  stockLiteStore.transactions.push(...initialTransactions)
+}
+
+export const products = stockLiteStore.products
+export const transactions = stockLiteStore.transactions
+
+
+function warehouseName(id: string) {
+  return warehouses.find((w) => w.id === id)?.name ?? id
+}
+
+export function findProduct(id: string) {
+  return products.find((p) => p.id === id)
+}
+
+export function recordTransaction(input: {
+  productId: string
+  productName: string
+  warehouseId: string
+  type: TransactionType
+  quantity: number
+  linkedTransactionId?: string
+}): Transaction {
+  const tx: Transaction = {
+    id: `t-${String(stockLiteStore.nextTransactionSeq++).padStart(3, '0')}`,
+    productId: input.productId,
+    productName: input.productName,
+    warehouseId: input.warehouseId,
+    warehouseName: warehouseName(input.warehouseId),
+    type: input.type,
+    quantity: input.quantity,
+    timestamp: new Date().toISOString(),
+    linkedTransactionId: input.linkedTransactionId,
+  }
+  transactions.push(tx)
+  return tx
+}
+
+// -------------------------------------------------------------------------
+// TASK 2 — Stock In / Stock Out
+// -------------------------------------------------------------------------
+// This is intentionally incomplete AND buggy. Right now it:
+//   - does NOT validate the quantity (accepts 0, negative, or non-numeric)
+//   - does NOT block a stock-out that exceeds current stock
+//     (so currentStock can go NEGATIVE — this is one of the Task 5 bugs)
+//   - does NOT call recordTransaction, so nothing shows up in History
+//
+// Participants must:
+//   1. Validate quantity is a positive, finite number
+//   2. Block OUT movements greater than currentStock
+//   3. Apply the movement to the correct product
+//   4. Call recordTransaction(...) so it appears in Transaction History
+export function applyStockMovement(
+  productId: string,
+  quantity: number,
+  direction: 'IN' | 'OUT',
+): Product {
+  const product = findProduct(productId)
+
+  if (!product) {
+    throw new Error('Product not found')
+  }
+
+  // Validate quantity
+  if (!Number.isFinite(quantity) || quantity <= 0) {
+    throw new Error('Quantity must be a positive number')
+  }
+
+  // Prevent stock from becoming negative
+  if (direction === 'OUT' && quantity > product.currentStock) {
+    throw new Error(
+      `Only ${product.currentStock} units in stock — cannot stock out more than that.`,
+    )
+  }
+
+  // Update stock
+  if (direction === 'IN') {
+    product.currentStock += quantity
+  } else {
+    product.currentStock -= quantity
+  }
+
+  // Record transaction
+  recordTransaction({
+    productId: product.id,
+    productName: product.name,
+    warehouseId: product.warehouseId,
+    type: direction,
+    quantity,
+  })
+
+  return product
+}
+
+// -------------------------------------------------------------------------
+// TASK 3 — Warehouse Transfer
+// -------------------------------------------------------------------------
+// This is intentionally incomplete AND buggy. Right now it:
+//   - does NOT validate source/destination warehouses, or check stock
+//   - only decrements the SOURCE product — it never adds the quantity to
+//     the destination warehouse (this is one of the Task 5 bugs: "a transfer
+//     that only updates one warehouse")
+//   - does NOT create a destination product row if one doesn't exist yet
+//   - does NOT log any transactions (no linked TRANSFER_OUT / TRANSFER_IN)
+//
+// Participants must:
+//   1. Validate source !== destination
+//   2. Validate quantity is positive and <= source.currentStock
+//   3. Deduct from source AND add to destination
+//   4. Create a destination product row if the product doesn't exist there yet
+//   5. Apply fully or not at all (no partial writes if validation fails)
+//   6. Record a linked TRANSFER_OUT / TRANSFER_IN pair via recordTransaction
+export function applyTransfer(
+  productId: string,
+  destWarehouseId: string,
+  quantity: number,
+): { source: Product; destination: Product } {
+  // 1. Find the source product
+  const source = findProduct(productId)
+
+  if (!source) {
+    throw new Error('Source product not found')
+  }
+
+  // 2. Validate destination warehouse
+  const destinationWarehouse = warehouses.find(
+    (w) => w.id === destWarehouseId,
+  )
+
+  if (!destinationWarehouse) {
+    throw new Error('Destination warehouse not found')
+  }
+
+  // 3. Source and destination must be different
+  if (source.warehouseId === destWarehouseId) {
+    throw new Error('Source and destination warehouses must be different')
+  }
+
+  // 4. Validate quantity
+  if (!Number.isFinite(quantity) || quantity <= 0) {
+    throw new Error('Quantity must be a positive number')
+  }
+
+  // 5. Prevent negative stock
+  if (quantity > source.currentStock) {
+    throw new Error(
+      `Only ${source.currentStock} units in stock — cannot transfer more than that.`,
+    )
+  }
+
+  // 6. Find the same product at the destination warehouse
+  let destination = products.find(
+    (p) =>
+      p.warehouseId === destWarehouseId &&
+      p.name === source.name &&
+      p.category === source.category,
+  )
+
+  // 7. Create destination product if it doesn't exist
+  if (!destination) {
+    const nextProductNumber =
+      Math.max(
+        ...products.map((p) => {
+          const number = Number(p.id.replace('p-', ''))
+          return Number.isFinite(number) ? number : 0
+        }),
+      ) + 1
+
+    destination = {
+      id: `p-${String(nextProductNumber).padStart(3, '0')}`,
+      name: source.name,
+      category: source.category,
+      warehouseId: destWarehouseId,
+      currentStock: 0,
+      reorderThreshold: source.reorderThreshold,
+    }
+
+    products.push(destination)
+  }
+
+  // 8. Apply the actual stock movement
+  source.currentStock -= quantity
+  destination.currentStock += quantity
+
+  // 9. Create TRANSFER_OUT transaction
+  const transferOut = recordTransaction({
+    productId: source.id,
+    productName: source.name,
+    warehouseId: source.warehouseId,
+    type: 'TRANSFER_OUT',
+    quantity,
+  })
+
+  // 10. Create TRANSFER_IN transaction linked to TRANSFER_OUT
+  const transferIn = recordTransaction({
+    productId: destination.id,
+    productName: destination.name,
+    warehouseId: destination.warehouseId,
+    type: 'TRANSFER_IN',
+    quantity,
+    linkedTransactionId: transferOut.id,
+  })
+
+  // 11. Link TRANSFER_OUT back to TRANSFER_IN
+  transferOut.linkedTransactionId = transferIn.id
+
+  return {
+    source,
+    destination,
+  }
+}
