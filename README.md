@@ -101,18 +101,6 @@ lib/
 ├── types.ts                    # Shared types
 └── auth.ts                     # Stubbed staff user
 ```
-
-## What Participants Need to Build
-
-The starter project intentionally contains gaps. The seed data and API stubs currently live in memory (`lib/seed-data.ts`). You can mutate that in-memory data directly from the API routes, or wire up whatever storage approach you prefer, as long as the behavior described below is correct.
-
-To find the unfinished areas, look for:
-
-- `TODO` comments, which mark every place where you need to add logic
-- API stubs that only return the seeded data and do not support writes
-
-## Participant Tasks
-
 ### Task 1 — Inventory View
 
 - Display name, category, warehouse, current stock, and reorder threshold
@@ -159,40 +147,4 @@ Fix the following issues:
 - A transfer that only updates one warehouse
 - Incorrect low stock status logic
 
-- **Low stock summary panel:** show counts of products needing replenishment per warehouse
-
-## Expected Behavior
-
-- **Inventory view:** shows name, category, warehouse, current stock, and reorder threshold. A product is low stock when current stock ≤ reorder threshold. Category and low stock filters work together, and an empty result is handled gracefully.
-- **Stock in:** increments stock in the correct warehouse and logs the operation for transaction history.
-- **Stock out:** decrements stock in the correct warehouse and logs the operation. A stock out that would exceed current stock is blocked, so inventory never goes negative.
-- **Validation:** quantities that are zero, negative, or non-numeric are rejected.
-- **UI updates:** the UI reflects the new stock level immediately after an operation.
-- **Transfers:** the quantity is deducted from the source warehouse and added to the destination warehouse. A transfer is rejected if the source has insufficient stock. Both warehouses are validated before any write, so a failed transfer leaves no partial changes. Each transfer is recorded as a linked pair in the transaction history.
-- **Transaction history:** lists product, warehouse, type, quantity, and timestamp, sorted by most recent timestamp. Filters by type and warehouse combine correctly.
-
-## How to Approach the Project
-
-1. Run the application with `npm run dev` and open [http://localhost:3000](http://localhost:3000).
-2. Explore the existing pages: Inventory (`/`), Stock (`/stock`), Transfer (`/transfer`), History (`/history`), and Login (`/login`).
-3. Search the codebase for `TODO` comments to find the unfinished areas.
-4. Inspect the relevant files, such as the page files, the API routes, `lib/seed-data.ts`, and `lib/types.ts`.
-5. Implement the required tasks.
-6. Test each feature as you build it.
-7. Verify edge cases such as invalid quantities, insufficient stock, empty filter results, and failed transfers.
-
-## Important Notes and Constraints
-
-- Keep your changes focused. You should not need to restructure the provided pages or components; just fill in the logic.
-- The API stubs return the seeded data as-is. You will need to extend them (or add new handlers) to support writes.
-- The seed data and API stubs live in memory (`lib/seed-data.ts`). You may mutate this data directly from the API routes or use another storage approach of your choice.
-- The staff auth skeleton (`/login`, `lib/auth.ts`) is not real authentication, just the expected shape.
-- The seed data includes products above, near, and at their reorder threshold, which is useful for checking low stock behavior.
-
-## Links
-
-- How to clone and fork this GitHub repository:
-- https://drive.google.com/file/d/1jRpIMKBL0hOPOiQ0Han6IWJON1bLjoxU/view?usp=sharing
-
-- Directly download zip file of this GitHub repository:
-- https://drive.google.com/file/d/18WZzxo6lle9gS78lQYL_VvpP3ENjW32n/view?usp=sharing
+This is the task that was asked us to modify.
